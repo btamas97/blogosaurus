@@ -30,13 +30,14 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    from .models import User
-
     from . import auth
     app.register_blueprint(auth.bp)
 
     from . import blog
     app.register_blueprint(blog.bp)
     app.add_url_rule('/', endpoint='index')
+
+    with app.app_context():
+        db.create_all()
 
     return app

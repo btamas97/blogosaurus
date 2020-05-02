@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{ post.title }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <article class="post">
+        <header>
+            <div>
+                <div class="about">by {{ post.user.username }} on {{ post.created.strftime('%Y-%m-%d') }}</div>
+            </div>
+        {% if g.user.id == post.user_id %}
+            <a class="action" href="{{ url_for('blog.update', id=post.id) }}">Edit</a>
+            <a class="action" href="{{ url_for('blog.delete', id=post.id) }}">Delete</a>
+        {% endif %}
+        </header>
+         <p class="body">{{ post.body }}</p>
+    </article>
+    {% if g.user %}
+        <form method="post" action="{{ url_for('blog.comment', id=post.id) }}">
+            <label for="body">Comment</label>
+            <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
+            <input type="submit" value="Save">
+        </form>
+    {% endif %}
+    {% for comment in post.comments|reverse %}
+        <div class="comment">
+            <header>
+                <div class="about">
+                    by {{ comment.user.username }} on {{ comment.created.strftime('%Y-%m-%d %H:%M:%S') }}
+                    {% if g.user.id == post.user_id or g.user.id == comment.user_id %}
+                        <a class="action" href="{{ url_for('blog.delete_comment',post_id=post.id, id=comment.id) }}">delete</a>
+                    {% endif %}
+                </div>
+            </header>
+            <div class="body">{{ comment.body }}</div>
+        </div>
+        {% if not loop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

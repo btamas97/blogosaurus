@@ -1,9 +1,13 @@
 from logging.config import fileConfig
-
+import sys
+import os
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
+
+sys.path.append(os.getcwd())
+
+from bloggo import db, create_app
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -13,11 +17,11 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
+app = create_app()
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+
+target_metadata = db.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -41,8 +45,9 @@ def run_migrations_offline():
     context.configure(
         url=url,
         target_metadata=target_metadata,
+        compare_type=True,
         literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
+        dialect_opts={"paramstyle": "named"}
     )
 
     with context.begin_transaction():
@@ -64,7 +69,9 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True
         )
 
         with context.begin_transaction():

@@ -14,7 +14,7 @@ bp = Blueprint('blog', __name__)
 @bp.route('/')
 def index():
     posts = Post.query.options(joinedload('user')).all()
-    return render_template('bloggo/index.html', posts=posts)
+    return render_template('blog/index.html', posts=posts)
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -36,7 +36,7 @@ def create():
             db.session.commit()
             return redirect(url_for('blog.index'))
 
-    return render_template('bloggo/create.html')
+    return render_template('blog/create.html')
 
 
 def get_post(id, check_author=True):
@@ -72,7 +72,7 @@ def update(id):
             db.session.commit()
             return redirect(url_for('blog.index'))
 
-    return render_template('bloggo/update.html', post=post)
+    return render_template('blog/update.html', post=post)
 
 
 @bp.route('/<int:id>/delete', methods=('POST', 'GET'))
@@ -97,7 +97,7 @@ def delete_comment(post_id, id):
 def view(id):
     post = Post.query.filter_by(id=id).first_or_404()
 
-    return render_template('bloggo/view.html', post=post)
+    return render_template('blog/view.html', post=post)
 
 
 @bp.route('/<int:id>/comment', methods=['POST'])
